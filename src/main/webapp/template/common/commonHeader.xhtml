@@ -1,0 +1,26 @@
+<f:view xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<ui:composition>
+		<h:form>
+		<div style="width:100%;display:flex">	
+				<div style="text-align: left;width:33%;" >
+					<p:graphicImage library="img" name="uniovi.png" style="margin: 1em 0 0 2em;"/>
+				</div>
+				<div style="text-align:center;width:33%;">
+						<h1>Tramitador<br/>UNIOVI</h1>
+				</div>			
+				<div style="text-align: right;vertical-align:bottom;width:33%">
+					<div style="vertical-align:bottom;margin:3em">
+					<h:outputText rendered="#{userSessionBean.username!=null}"
+						value="Usuario :  #{userSessionBean.username} | " />
+					<h:outputLink rendered="#{userSessionBean.username!=null}"
+						value="#{request.contextPath}/logout">logout</h:outputLink>
+					</div>
+				</div>
+				</div>				
+		</h:form>
+	</ui:composition>
+</f:view>

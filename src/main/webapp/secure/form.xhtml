@@ -1,0 +1,143 @@
+<f:view xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<ui:composition template="/template/common/commonOnlyCentral.xhtml">
+		<ui:define name="contentLeft">
+			<h:form enctype="multipart/form-data">
+
+
+				<center>
+					<p:panel style="width:80%">
+						<p:panel id="panel">
+							<f:facet name="header">
+								<h:outputText
+									value="Tarea a completar : #{formViewScopedBean.taskName}"
+									rendered="#{not empty formViewScopedBean.taskName}" />
+								<h:outputText value="Inicio"
+									rendered="#{empty formViewScopedBean.taskName}" />
+							</f:facet>
+							<br />
+							<p:panel rendered="#{formViewScopedBean.fields.size()==0}">
+								Tarea de inicial sin campos a rellenar
+							</p:panel>
+
+							<p:panel
+								style="background: #d9d9d9;text-color: #999999; text-align:left;">
+							Rellene los campos con la información requerida. Posteriormente seleccione de su equipo la documentación necesaria mediante el botón 'seleccionar' y adjúntela mediante el botón 'adjuntar'. Deberá aparecer en el bloque de 'Documentos a anexar.
+							<br />Recuerde presionar el botón 'Enviar' para completar la tarea.   
+							</p:panel>
+
+							<br />
+
+							<p:fieldset style="margin-bottom:20px; text-align: left;">
+								<ui:repeat value="#{formViewScopedBean.fields}" var="elemento"
+									varStatus="status">
+									<div style="padding-bottom: .5em; vertical-align: middle;">
+										<p:outputLabel value="#{elemento.name} : " />
+										<p:inputText rendered="#{elemento.type == 'string'}"
+											value="#{formViewScopedBean.variables[elemento.id]}"
+											required="#{elemento.required}"
+											readonly="#{!elemento.writable}" />
+										<p:inputTextarea rows="10" cols="50"
+											rendered="#{elemento.type == 'textarea'}"
+											value="#{formViewScopedBean.variables[elemento.id]}"
+											required="#{elemento.required}"
+											readonly="#{!elemento.writable}" />
+										<p:inputText rendered="#{elemento.type == 'long'}"
+											value="#{formViewScopedBean.variables[elemento.id]}"
+											required="#{elemento.required}"
+											readonly="#{!elemento.writable}" />
+										<p:selectBooleanCheckbox
+											rendered="#{elemento.type == 'boolean'}"
+											value="#{formViewScopedBean.variables[elemento.id]}"
+											required="#{elemento.required}"
+											readonly="#{!elemento.writable}" />
+										<p:selectOneMenu rendered="#{elemento.type == 'enum'}"
+											value="#{formViewScopedBean.variables[elemento.id]}"
+											required="#{elemento.required}"
+											readonly="#{!elemento.writable}">
+											<f:selectItems value="#{elemento.values.entrySet()}"
+												var="entry" itemValue="#{entry.key}"
+												itemLabel="#{entry.value}" />
+										</p:selectOneMenu>
+										<p:calendar id="button" rendered="#{elemento.type == 'date'}"
+											value="#{formViewScopedBean.variables[elemento.id]}"
+											required="#{elemento.required}"
+											readonly="#{!elemento.writable}" showOn="button">
+											<f:converter converterId="es.uniovi.innova.OTSConvertor" />
+										</p:calendar>
+									</div>
+
+								</ui:repeat>
+							</p:fieldset>
+						</p:panel>
+						<br />
+						<br />
+						<p:panel rendered="#{not empty formViewScopedBean.processAttachs}">	
+				Documentos Aportados
+				<p:dataTable value="#{formViewScopedBean.processAttachs}"
+								var="elemento">
+								<p:column>
+									<f:facet name="header">Nombre</f:facet>
+							#{elemento.nombre}
+						</p:column>
+								<p:column>
+									<f:facet name="header">Tipo</f:facet>
+							#{elemento.tipo}
+						</p:column>
+								<p:column>
+									<f:facet name="header">Descripcion</f:facet>
+							#{elemento.descripcion}
+						</p:column>
+								<p:column>
+									<p:commandButton value="Download" ajax="false"
+										icon="ui-icon-arrowthick-1-s">
+										<p:fileDownload
+											value="#{formViewScopedBean.download(elemento)}" />
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+						<br />
+
+
+						<p:panel>	
+				Documentos a anexar		
+				<p:dataTable value="#{formViewScopedBean.attachments}"
+								var="elemento" rowIndexVar="indice" id="aAnexar">
+								<p:column>
+									<f:facet name="header">Nombre</f:facet>
+							#{elemento.fileName}
+						</p:column>
+								<p:column>
+									<f:facet name="header">Tamaño</f:facet>
+							#{elemento.size}
+						</p:column>
+								<p:column>
+									<p:commandButton value="X"
+										actionListener="#{formViewScopedBean.deleteAttach(indice)}"
+										update="aAnexar" immediate="true" />
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+						<br />
+						<p:fileUpload
+							fileUploadListener="#{formViewScopedBean.handleFileUpload}"
+							mode="advanced" dragDropSupport="false" multiple="true"
+							sizeLimit="1000000" fileLimit="3"
+							allowTypes="/(\.|\/)(gif|pdf)$/" update="aAnexar"
+							label="Seleccionar" uploadLabel="Adjuntar" cancelLabel="Cancelar" />
+
+						<p:commandButton value="Enviar"
+							action="#{formViewScopedBean.process()}"></p:commandButton>
+						<p:commandButton value="Cancelar"
+							action="#{formViewScopedBean.cancel()}" immediate="true"></p:commandButton>
+					</p:panel>
+				</center>
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

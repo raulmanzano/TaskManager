@@ -1,0 +1,31 @@
+<f:view xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	<ui:composition template="/template/common/commonOnlyCentral.xhtml">
+		<ui:define name="contentLeft">
+			<h:form id="loginForm">
+				<center style="padding-top: 14%;">
+					<p:panel style="width: 50%;padding:2em;">
+						<p:panelGrid columns="2"
+							columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid"
+							styleClass="ui-panelgrid-blank">
+							<p:outputLabel for="username" value="Usuario" />
+							<p:inputText id="username" value="#{loginBean.username}"
+								required="true" />
+							<p:outputLabel for="password" value="Password" />
+							<p:password id="password" value="#{loginBean.password}"
+								required=" true" />
+						</p:panelGrid>
+						<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+							layout="grid" styleClass="ui-panelgrid-blank">
+							<p:commandButton value="Acceder" action="#{loginBean.login}" />
+						</p:panelGrid>
+					</p:panel>
+				</center>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

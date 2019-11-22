@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head />
+<h:body>
+
+
+	<h:form>
+		<p:growl id="growl" life="2000" autoUpdate="true" />
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+		<p:dialog widgetVar="statusDialog" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<p:graphicImage library="img" name="ajax_loader_blue_32.gif" />
+		</p:dialog>
+	</h:form>
+	<div id="page">
+		<div id="header">
+			<ui:insert name="header">
+				<ui:include src="/template/common/commonHeader.xhtml" />
+			</ui:insert>
+		</div>
+		<div id="content">
+			<!-- 			<div class="ui-fluid"> -->
+			<!-- 			<p:panel> -->
+			<ui:insert name="contentLeft">
+			</ui:insert>
+			<!-- 	   		</p:panel> -->
+			<!-- 			</div> -->
+		</div>
+		<div id="footer">
+			<ui:insert name="footer">
+				<ui:include src="/template/common/commonFooter.xhtml" />
+			</ui:insert>
+		</div>
+	</div>
+</h:body>
+</html>
+
+
+

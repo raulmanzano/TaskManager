@@ -1,0 +1,135 @@
+<f:view xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<ui:composition template="/template/common/commonOnlyCentral.xhtml">
+		<ui:define name="contentLeft">
+			<h:form>
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-9,ui-grid-col-3"
+					layout="grid" styleClass="ui-panelgrid-blank">
+					<p:tabView>
+						<p:tab title="Bandeja de entrada">
+							<p:panel style="background: #d9d9d9;text-color: #999999; text-align:left;">
+							Bandeja de entrada de las tareas asignadas al usuario para ser completadas. Presione el botón 'Completar' anexo al tramite cuya tarea desea realizar.
+							</p:panel>
+							<br/>
+							<p:panel id="tareas">								
+								<p:dataTable value="#{indexViewBean.tasks}" var="elemento"
+									width="100%" style="text-align: center;">
+																		<p:column>
+										<f:facet name="header">Fecha</f:facet>
+							#{elemento.getProcessVariables().get('fecha')}
+						</p:column>
+									
+									<p:column>
+										<f:facet name="header">Trámite</f:facet>
+							#{indexViewBean.getProcessDefinitionName(elemento)}
+						</p:column>						
+															<p:column>
+										<f:facet name="header">Asunto</f:facet>
+							#{elemento.getProcessVariables().get('asunto')}							
+						</p:column>						
+												
+									<p:column>
+										<f:facet name="header">Tarea</f:facet>
+							#{elemento.name}
+						</p:column>
+									<p:column>
+										<p:commandButton value="Completar"
+											action="#{indexViewBean.complete(elemento)}" />
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+						</p:tab>
+						<p:tab title="Tramites iniciados activos">
+														
+							<p:panel style="background: #d9d9d9;text-color: #999999; text-align:left;">
+							Listado de los ramites iniciados por el usuario actual, en el que se muestran su estado actual. Desde aquí puede desistir cualquiera de los tramites si existe anexado el botón 'Desistir'. Si existiese alguna tarea asignada a usted puede realizarlo desde aquí o desde la bandeja de entrada.
+							</p:panel>
+							<br/>
+							<p:panel id="procesosIniciados">
+								<p:dataTable value="#{indexViewBean.iniciatedProcessInstances}"
+									var="elemento" width="100%" style="text-align: center;">
+																		<p:column>
+										<f:facet name="header">Fecha</f:facet>
+							#{elemento.getProcessVariables().get('fecha')}							
+						</p:column>									
+									<p:column>
+										<f:facet name="header">Trámite</f:facet>
+							#{elemento.processDefinitionName} 
+						</p:column>
+									<p:column>
+										<f:facet name="header">Asunto</f:facet>
+							#{elemento.getProcessVariables().get('asunto')}							
+						</p:column>
+									<p:column>
+										<f:facet name="header">Estado</f:facet>
+							#{elemento.getProcessVariables().get('estado')}							
+						</p:column>					
+						<p:column>
+										<ui:repeat value="#{indexViewBean.tasksOfProcess(elemento)}"
+											var="tarea">
+											<p:commandButton value="#{tarea.name}"
+												action="#{indexViewBean.complete(tarea)}" />
+										</ui:repeat>
+						</p:column>
+									<p:column>
+										<p:commandButton value="Desistir"
+											action="#{indexViewBean.desistir(elemento)}" update="@form" />
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+						</p:tab>
+						<p:tab title="Histórico Tramites">
+							<p:panel style="background: #d9d9d9;text-color: #999999; text-align:left;">
+							Histórico de los trámites en los cuales el usuario se ha visto involucrado mediante la asignación de alguna tarea
+							</p:panel>
+							<br/>
+							
+							<p:panel id="procesosInvolucrado">
+								<p:dataTable
+									value="#{indexViewBean.involvedHistoricProcessInstances}"
+									var="elemento" width="100%" style="text-align: center;">
+									<p:column>
+										<f:facet name="header">Trámite</f:facet>
+							#{elemento.processDefinitionName} 
+						</p:column>
+									<p:column>
+										<f:facet name="header">Fecha</f:facet>
+							#{elemento.getProcessVariables().get('fecha')}							
+						</p:column>
+									<p:column>
+										<f:facet name="header">Asunto</f:facet>
+							#{elemento.getProcessVariables().get('asunto')}							
+						</p:column>
+									<p:column>
+										<f:facet name="header">Estado</f:facet>
+										<!-- 							<h:outputText rendered="#{elemento.deleteReason eq 'DESISTIDO'}" value="Desistido"></h:outputText>							 -->
+										<!-- 							<h:outputText rendered="#{elemento.deleteReason ne 'DESISTIDO'}" value="#{elemento.getProcessVariables().get('estado')}"></h:outputText> -->
+							#{elemento.getProcessVariables().get('estado')}
+						</p:column>
+								</p:dataTable>
+							</p:panel>
+						</p:tab>
+					</p:tabView>
+
+					<p:panel header="Tramites disponibles para Iniciar">
+						<p:dataTable value="#{indexViewBean.process}" var="v_process" style="text-align: center;" width="100%">
+							<p:column>
+								<f:facet name="header">Trámite</f:facet>
+							#{v_process.name}
+						</p:column>
+							<p:column>								
+								<p:commandButton value="Iniciar"
+									action="#{indexViewBean.start(v_process.id)}" />
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+
+
+				</p:panelGrid>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

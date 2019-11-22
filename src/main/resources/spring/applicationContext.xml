@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://www.springframework.org/schema/data/jpa
+						http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+						http://www.springframework.org/schema/security
+						http://www.springframework.org/schema/security/spring-security-3.2.xsd						
+						">
+
+	<context:annotation-config />
+	<context:component-scan base-package="as.asac.taskManager" />
+	<context:property-placeholder location="classpath*:taskmanager.properties" />
+
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider>
+			<sec:jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="SELECT id_ as username, pwd_ as password, true as enabled FROM act_id_user where id_=?"
+				authorities-by-username-query="SELECT user_id_ as username, group_id_ as authorities  FROM act_id_membership where user_id_ =?" />
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+
+	<sec:http auto-config="true" use-expressions="true">
+		<sec:intercept-url pattern="/secure/**" access="isAuthenticated()" />
+		<sec:intercept-url pattern="/template/**" access="permitAll" />
+		<sec:intercept-url pattern="/pages/common/**"
+			access="permitAll" />
+		<sec:intercept-url pattern="/javax.faces.resource/**"
+			access="permitAll" />
+		<!-- <sec:intercept-url pattern="/**" access="permitAll"/> -->
+		<sec:intercept-url pattern="/login.xhtml" access="permitAll" />
+		<sec:form-login login-page="/login.xhtml"
+			default-target-url="/secure/index.xhtml" authentication-failure-url="/login.xhtml" />
+		<sec:logout logout-url="/logout" invalidate-session="true"
+			delete-cookies="JSESSIONID,SPRING_SECURITY_REMEMBER_ME_COOKIE"
+			logout-success-url="/login.xhtml"></sec:logout>
+	</sec:http>
+
+
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource">
+			<bean class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+				<property name="driverClass" value="${jdbc.driverClass}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+		<property name="databaseType" value="postgres" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="databaseSchemaUpdate" value="true" />
+		<property name="jobExecutorActivate" value="false" />
+
+		<property name="mailServerHost" value="smtp.gmail.com" /> 
+		<property name="mailServerPort" value="465" />  
+		<property name="mailServerDefaultFrom" value="pilotouniovi@gmail.com" />
+		<property name="mailServerUsername" value="pilotouniovi@gmail.com" />
+		<property name="mailServerPassword" value="piloto.piloto" />
+		<property name="mailServerUseSSL" value="true" />
+		<property name="mailServerUseTLS" value="true" />
+	</bean>
+	
+	
+	
+
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
+
+	<bean id="repositoryService" factory-bean="processEngine"
+		factory-method="getRepositoryService" />
+	<bean id="runtimeService" factory-bean="processEngine"
+		factory-method="getRuntimeService" />
+	<bean id="taskService" factory-bean="processEngine"
+		factory-method="getTaskService" />
+	<bean id="historyService" factory-bean="processEngine"
+		factory-method="getHistoryService" />
+	<bean id="managementService" factory-bean="processEngine"
+		factory-method="getManagementService" />
+	<bean id="formService" factory-bean="processEngine"
+		factory-method="getFormService" />
+	<bean id="identityService" factory-bean="processEngine"
+		factory-method="getIdentityService" />
+		
+	
+<!-- 	Bean necesarios para el proyecto Workflowactivitilocal	 -->
+	<bean id="generarJustificanteActivitiTask" class="as.asac.workflowmanager.activiti.task.GenerarJustificanteActivitiTask" />
+	<bean id="cargarOrganizacionTramitadoraActivitiTask" class="as.asac.workflowmanager.activiti.task.CargarOrganizacionTramitadoraActivitiTask" />
+	<bean id="cambiarOrganizacionTramitadoraActivitiTask" class="as.asac.workflowmanager.activiti.task.CambiarOrganizacionTramitadoraActivitiTask" />
+	<bean id="firmarSubirResolucionActivitiTask" class="as.asac.workflowmanager.activiti.task.FirmarSubirResolucionActivitiTask" />
+	<bean id="subirDocumentoSubsanacionActivitiTask" class="as.asac.workflowmanager.activiti.task.SubirDocumentoSubsanacionActivitiTask" />
+		
+		
+
+</beans>
+
+
+
